@@ -1,0 +1,39 @@
+#cloud-config
+# My cloud-init.yaml
+# vim: syntax=yaml
+# Reference: https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+
+groups:
+  - hilli
+
+users:
+  - name: hilli
+    gecos: Jens Hilligsoe
+    primary_group: hilli
+    groups: users,sudo
+    lock_passwd: true
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    passwd: $6$rounds=4096$iFRipVGNDoC49$PjcUjwAQETkPNpkskSP3XlgVPf5945oH7NepmeD1FsJldYaFiR4weRJhFicBQ1vh1lN2YKL4PwZLx7S1KYjTv.
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEuksrREX5mn9I9iWLlKOUVIdM7Ae3XK5Mv4kKL6AGeW hilli
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDpjAIQE+wFteitzXuyxHHhZwd5rHbYN94WjcHxlWtDzY2+XguxDaoukBdCNRhR+ap4UGJsASLB/3gaKxl0vB/6t6tATxsC9LY+b0TO7I8AjbYH5G1Uh/CnOavzjCxTX5Y0dxadfySx7OK7el2mumcQp94qfmGdeJE1sE4G+TRycPy5pCg4UZ3jyAXEMOTXo8BeiYrt7si8qXDpK1piQqbLijEGe5kiKaXdniKBgpaaRScgFGmRMVSmJNXpCRjR582hvHO8H2UfbXUVAgnYXhntCW4tJC+jreBXvHQXcdqBv8Y0W2RT6Gm0WfxjmaXHpTPLnE/7hn3oC8Y7+7X6pqo/
+
+ssh_pwauth: false
+
+# apt update
+package_update: true
+package_upgrade: true
+packages:
+  - openssh-server
+
+# On first boot, set the (default) ubuntu user's password to "ubuntu" and
+# expire user passwords
+# Considering this cloud-init debug stuff
+# chpasswd:
+#   expire: true
+#   list:
+#   - ubuntu:ubuntu
+# ssh_pwauth: true
+
+final_message: "The system is finally up, after $UPTIME seconds"
