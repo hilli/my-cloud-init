@@ -1,0 +1,64 @@
+#cloud-config
+# My cloud-init.yaml
+# vim: syntax=yaml
+# Reference: https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+
+groups:
+  - hilli
+
+users:
+  - name: hilli
+    gecos: Jens Hilligsoe
+    primary_group: hilli
+    groups: users,sudo
+    lock_passwd: true
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    passwd: $6$.0ZDYqLfiIrSEUfx$nKWIfQzJbqYlqeFCNgK4.xGWOo7b9SbkGzKncDKPvPM7ipRtsbqLSqA54c171gcuI0WuGEPytgldeKyYWTvKn.
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEuksrREX5mn9I9iWLlKOUVIdM7Ae3XK5Mv4kKL6AGeW hilli
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDpjAIQE+wFteitzXuyxHHhZwd5rHbYN94WjcHxlWtDzY2+XguxDaoukBdCNRhR+ap4UGJsASLB/3gaKxl0vB/6t6tATxsC9LY+b0TO7I8AjbYH5G1Uh/CnOavzjCxTX5Y0dxadfySx7OK7el2mumcQp94qfmGdeJE1sE4G+TRycPy5pCg4UZ3jyAXEMOTXo8BeiYrt7si8qXDpK1piQqbLijEGe5kiKaXdniKBgpaaRScgFGmRMVSmJNXpCRjR582hvHO8H2UfbXUVAgnYXhntCW4tJC+jreBXvHQXcdqBv8Y0W2RT6Gm0WfxjmaXHpTPLnE/7hn3oC8Y7+7X6pqo/
+
+ssh_pwauth: false
+
+# apt update
+package_update: true
+package_upgrade: true
+packages:
+  - openssh-server
+  - rpi-eeprom
+
+chpasswd:
+  expire: false
+  list:
+    - hilli:hilli
+
+## Configure hostname
+preserve_hostname: false
+fqdn: rpi1
+hostname: rpi1
+
+## Preconfigure docker logging to rotate
+write_files:
+  - path: /etc/docker/daemon.json
+    content: |
+      {
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+
+## Turn swapoff
+runcmd:
+  - swapoff -a
+
+power_state:
+  delay: "0"
+  mode: poweroff
+  message: Bye Bye
+  timeout: 30
+  condition: True
+
+final_message: "The system is finally up, after $UPTIME seconds"

@@ -1,0 +1,1 @@
+program_usb_boot_mode=1
